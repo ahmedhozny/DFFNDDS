@@ -265,28 +265,18 @@ class MultiViewNet(nn.Module):
 
         self.norm = nn.LayerNorm(proj_dim*5)#为什么是四层 proj_dim 原本为3 5改成3
 
-    def forward(self, smile_1_vectors,smile_2_vectors,context,fp1_vectors,fp2_vectors):
-    # def forward(self, smile_1_vectors, smile_2_vectors, context,):
-        # smile_1_vectors, smile_2_vectors, context,
+    def forward(self, smile_1_vectors, smile_2_vectors, context, fp1_vectors, fp2_vectors):
         smile_1_vectors = self.projection_smi_1(smile_1_vectors)
         smile_2_vectors = self.projection_smi_2(smile_2_vectors)
-        contextFeatures = self.projection_context(context)#contextfeatures能不能reshape#尝试reshape
+        contextFeatures = self.projection_context(context)  # contextfeatures能不能reshape#尝试reshape
         fp1_vectors = self.projection_fp1(fp1_vectors)
         fp2_vectors = self.projection_fp2(fp2_vectors)
-        all_features = torch.stack([smile_1_vectors, smile_2_vectors,contextFeatures.squeeze(1),fp1_vectors,fp2_vectors], dim=1)#改变维度  试一下
-#        smile_1_vectors, smile_2_vectors,fp1_vectors,fp2_vectors
+        all_features = torch.stack(
+            [smile_1_vectors, smile_2_vectors, contextFeatures.squeeze(1), fp1_vectors, fp2_vectors],dim=1)  # 改变维度  试一下
         all_features = self.feature_interact(all_features)
-        out = self.transform(all_features)#
+        out = self.transform(all_features)  #
 
-        # align_pos1 = self.align(torch.cat([fp1_vectors, smile_1_vectors],1))
-        # align_pos2 = self.align(torch.cat([fp2_vectors, smile_2_vectors],1))
-        # align_neg1 = self.align(torch.cat([fp2_vectors, smile_1_vectors],1))
-        # align_neg2 = self.align(torch.cat([fp1_vectors, smile_2_vectors],1))
-        #
-        # align_score = torch.stack([align_pos1, align_pos2, align_neg1, align_neg2 ], -1)
         return out
-        # , align_score
-        # return out
 
 
 class DecoderNet(nn.Module):

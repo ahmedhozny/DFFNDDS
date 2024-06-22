@@ -1,5 +1,5 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
 from sentence_transformers import SentenceTransformer, InputExample
 from sentence_transformers import models, losses

@@ -1,23 +1,15 @@
-import logging
+import torch
+import json
+
+import numpy as np
 import torch
 import torch.utils.data as data
-import numpy as np
-import json
-import os
-import gzip
-import tqdm
-
-from collections import OrderedDict
-import os
 from rdkit import Chem
-from torch.utils.data import Dataset, DataLoader
-from sentence_transformers import SentenceTransformer, InputExample,LoggingHandler
-from rdkit.Chem import Descriptors
-from rdkit.ML.Descriptors import MoleculeDescriptors
-from sentence_transformers import models, losses,util,datasets,evaluation
-from rdkit.ML.Descriptors import MoleculeDescriptors
 from rdkit.Chem import AllChem, Descriptors
 from rdkit.Chem import rdMolDescriptors
+from rdkit.ML.Descriptors import MoleculeDescriptors
+from sentence_transformers import SentenceTransformer
+
 # from rdkit import DataStructs
 # feature_extractor = AutoFeatureExtractor.from_pretrained("newoutputs/checkpoint-76582")
 
@@ -48,6 +40,7 @@ fpFunc_dict['rdk6'] = lambda m: Chem.RDKFingerprint(m, maxPath=6, fpSize=nbits, 
 fpFunc_dict['rdk7'] = lambda m: Chem.RDKFingerprint(m, maxPath=7, fpSize=nbits, nBitsPerHash=2)
 fpFunc_dict['rdkDes'] = lambda m: calc.CalcDescriptors(m)
 
+
 class SynergyEncoderDataset(data.Dataset):
     def __init__(self, drug_1_smiles,drug_2_smiles,Y_Label,context,maxCompoundLen=128, device=torch.device("cuda"),fp_name='hashap'):#context:细胞系，Y：LABEL，二分类，这里的maxcompoundlen是相当于batch-size吗？device="cpu"
         self.maxCompoundLen = maxCompoundLen
@@ -76,7 +69,7 @@ class SynergyEncoderDataset(data.Dataset):
         self.simse = {}
         # self.chem ={}
         self.drug2fps = {}
-        for smile in list(set(self.drug_1_smiles))+list(set(self.drug_2_smiles)):   
+        for smile in list(set(self.drug_1_smiles))+list(set(self.drug_2_smiles)):
             smile_str = self.drug_set[smile]['smiles'][:self.maxCompoundLen]
             self.simse[smile] = self.drug_model.encode(smile_str)
             # self.chem[smile] = self.drug_model.encode(smile_str)
@@ -120,4 +113,3 @@ class SynergyEncoderDataset(data.Dataset):
                 torch.FloatTensor([context_features]),
                 torch.FloatTensor(fp1),
                 torch.FloatTensor(fp2)]
-
