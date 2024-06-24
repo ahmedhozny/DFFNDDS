@@ -266,11 +266,22 @@ class MultiViewNet(nn.Module):
         self.norm = nn.LayerNorm(proj_dim*5)#为什么是四层 proj_dim 原本为3 5改成3
 
     def forward(self, smile_1_vectors, smile_2_vectors, context, fp1_vectors, fp2_vectors):
+        # print("smile_1_vectors shape:", smile_1_vectors.shape)
+        # print("smile_2_vectors shape:", smile_2_vectors.shape)
+        # print("context shape:", context.shape)
+        # print("fp1_vectors shape:", fp1_vectors.shape)
+        # print("fp2_vectors shape:", fp2_vectors.shape)
         smile_1_vectors = self.projection_smi_1(smile_1_vectors)
         smile_2_vectors = self.projection_smi_2(smile_2_vectors)
         contextFeatures = self.projection_context(context)  # contextfeatures能不能reshape#尝试reshape
         fp1_vectors = self.projection_fp1(fp1_vectors)
         fp2_vectors = self.projection_fp2(fp2_vectors)
+        # print("smile_1_vectors shape:", smile_1_vectors.shape)
+        # print("smile_2_vectors shape:", smile_2_vectors.shape)
+        # print("contextFeatures shape:", contextFeatures.shape)
+        # print("fp1_vectors shape:", fp1_vectors.shape)
+        # print("fp2_vectors shape:", fp2_vectors.shape)
+
         all_features = torch.stack(
             [smile_1_vectors, smile_2_vectors, contextFeatures.squeeze(1), fp1_vectors, fp2_vectors],dim=1)  # 改变维度  试一下
         all_features = self.feature_interact(all_features)
